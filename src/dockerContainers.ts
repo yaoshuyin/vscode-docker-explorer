@@ -23,7 +23,7 @@ export class DockerContainers extends DockerTreeBase<DockerContainer> implements
                 containerStrings.push(`${items[1]} (${items[2]})`);
             });
         } else {
-            containerStrings = Executor.execSync("docker ps -a --format \"{{.Names}} ({{.Image}})\"").split(/[\r\n]+/g).filter((item) => item);
+            containerStrings = Executor.execSync("docker -H 192.168.56.106 ps -a --format \"{{.Names}} ({{.Image}})\"").split(/[\r\n]+/g).filter((item) => item);
         }
 
         vscode.window.showQuickPick(containerStrings, { placeHolder: "Search Docker Container" }).then((containerString) => {
@@ -70,68 +70,68 @@ export class DockerContainers extends DockerTreeBase<DockerContainer> implements
     }
 
     public getContainer(containerName: string): void {
-        Executor.runInTerminal(`docker ps -a --filter "name=${containerName}"`);
+        Executor.runInTerminal(`docker -H 192.168.56.106 ps -a --filter "name=${containerName}"`);
         AppInsightsClient.sendEvent("getContainer");
     }
 
     public startContainer(containerName: string): void {
-        Executor.runInTerminal(`docker start ${containerName}`);
+        Executor.runInTerminal(`docker  -H 192.168.56.106 start ${containerName}`);
         AppInsightsClient.sendEvent("startContainer");
     }
 
     public attachContainer(containerName: string): void {
-        Executor.runInTerminal(`docker attach ${containerName}`, true, `attach ${containerName}`);
+        Executor.runInTerminal(`docker  -H 192.168.56.106 attach ${containerName}`, true, `attach ${containerName}`);
         AppInsightsClient.sendEvent("attachContainer");
     }
 
     public stopContainer(containerName: string): void {
-        Executor.runInTerminal(`docker stop ${containerName}`);
+        Executor.runInTerminal(`docker  -H 192.168.56.106 stop ${containerName}`);
         AppInsightsClient.sendEvent("stopContainer");
     }
 
     public restartContainer(containerName: string): void {
-        Executor.runInTerminal(`docker restart ${containerName}`);
+        Executor.runInTerminal(`docker -H 192.168.56.106 restart ${containerName}`);
         AppInsightsClient.sendEvent("restartContainer");
     }
 
     public showContainerStatistics(containerName: string): void {
-        Executor.runInTerminal(`docker stats ${containerName}`);
+        Executor.runInTerminal(`docker -H 192.168.56.106 stats ${containerName}`);
         AppInsightsClient.sendEvent("showContainerStatistics");
     }
 
     public showContainerLogs(containerName: string): void {
         const containerLogsOptions = Utility.getConfiguration().get<string>("containerLogsOptions");
-        Executor.runInTerminal(`docker logs ${containerName} ${containerLogsOptions}`, true, `logs ${containerName}`);
+        Executor.runInTerminal(`docker -H 192.168.56.106 logs ${containerName} ${containerLogsOptions}`, true, `logs ${containerName}`);
         AppInsightsClient.sendEvent("showContainerLogs");
     }
 
     public inspectContainer(containerName: string): void {
-        Executor.runInTerminal(`docker inspect ${containerName}`);
+        Executor.runInTerminal(`docker -H 192.168.56.106 inspect ${containerName}`);
         AppInsightsClient.sendEvent("inspectContainer");
     }
 
     public removeContainer(containerName: string): void {
-        Executor.runInTerminal(`docker rm ${containerName}`);
+        Executor.runInTerminal(`docker -H 192.168.56.106 rm ${containerName}`);
         AppInsightsClient.sendEvent("removeContainer");
     }
 
     public executeCommandInContainer(containerName: string): void {
         const command = Utility.getConfiguration().get<string>("executionCommand");
         if (command) {
-            Executor.runInTerminal(`docker exec ${containerName} ${command}`);
+            Executor.runInTerminal(`docker -H 192.168.56.106 exec ${containerName} ${command}`);
         } else {
-            Executor.runInTerminal(`docker exec ${containerName} `, false);
+            Executor.runInTerminal(`docker -H 192.168.56.106 exec ${containerName} `, false);
         }
         AppInsightsClient.sendEvent("executeCommandInContainer", command ? { executionCommand: command } : {});
     }
 
     public executeInBashInContainer(containerName: string): void {
-        Executor.runInTerminal(`docker exec -it ${containerName} bash`, true, containerName);
+        Executor.runInTerminal(`docker -H 192.168.56.106 exec -it ${containerName} bash`, true, containerName);
         AppInsightsClient.sendEvent("executeInBashInContainer");
     }
 
     private getContainerStrings(): string[] {
-        return Executor.execSync("docker ps -a --format \"{{.ID}} {{.Names}} {{.Image}} {{.Status}}\"")
+        return Executor.execSync("docker -H 192.168.56.106 ps -a --format \"{{.ID}} {{.Names}} {{.Image}} {{.Status}}\"")
             .split(/[\r\n]+/g).filter((item) => item);
     }
 }
